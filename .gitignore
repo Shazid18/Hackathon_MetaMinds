@@ -1,0 +1,46 @@
+# Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Flask instance folder (contains runtime data)
+instance/
+
+# Flask application configuration (this may contain sensitive information)
+*.env
+
+# Virtual environment folder
+venv/
+env/
+.venv/
+ENV/
+
+# IDE/editor specific files
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Coverage reports (from pytest, etc.)
+.coverage
+*.cover
+
+# Database files (if using SQLite, for example)
+*.sqlite3
+*.db
+
+# Pytest cache
+.pytest_cache/
+
+# MyPy (static type checking) cache
+.mypy_cache/
+
+# PyInstaller
+dist/
+build/
