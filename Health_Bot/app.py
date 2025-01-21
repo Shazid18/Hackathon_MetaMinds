@@ -13,7 +13,7 @@ app = Flask(__name__)
 # Set up the LLM, API keys, and agents
 llm = LLM(
     model="gpt-4o",
-    api_key="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"
+    api_key="YOUR_API_KEY"
 )
 
 os.environ["SERPER_API_KEY"] = "ebf2218969d785f46bed48d0b2bc0cd4232b8642"
