@@ -3,28 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Advisory</title>
+    <title>Travel Health Assistant</title>
+    <style>
+        /* Loader style */
+        #loader {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        /* Animation for loader */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Page content */
+        .container {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Travel Advisory System</h1>
+    <div class="container">
+        <h1>Welcome to the Travel Health Assistant</h1>
 
-    <form method="POST" action="/get_travel_advisory">
-        <label for="location">Enter your destination:</label>
-        <input type="text" id="location" name="location" required>
-        <br><br>
+        <!-- Form to take user input -->
+        <form id="advisory-form" method="POST" action="/get_travel_advisory">
+            <label for="location">Enter your destination:</label>
+            <input type="text" id="location" name="location" required>
+            <br><br>
 
-        <label for="has_insurance">Do you already have health insurance? (yes/no):</label>
-        <input type="text" id="has_insurance" name="has_insurance" required>
-        <br><br>
+            <label for="has_insurance">Do you already have health insurance? (yes/no):</label>
+            <input type="text" id="has_insurance" name="has_insurance" required>
+            <br><br>
 
-        <input type="submit" value="Get Travel Advisory">
-    </form>
+            <input type="submit" value="Get Travel Advisory">
+        </form>
 
-    {% if final_report %}
-        <h2>Travel Advisory Report for {{ location }}</h2>
-        <h3>Report has been saved to: {{ saved_file }}</h3>
-        <h4>Preview of the Report:</h4>
-        <pre>{{ final_report }}</pre>
-    {% endif %}
+        <!-- Loader div (hidden by default) -->
+        <div id="loader"></div>
+
+        <!-- Results Section -->
+        {% if final_report %}
+            <h2>Travel Health Assistant Report for {{ location }}</h2>
+            <!-- <h4>Travel Health Assistant Report:</h4> -->
+            <pre>{{ final_report }}</pre>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript to handle form submission and show loader -->
+    <script>
+        // When the form is submitted
+        document.getElementById('advisory-form').addEventListener('submit', function(event) {
+            // Show the loader
+            document.getElementById('loader').style.display = 'block';
+        });
+    </script>
 </body>
 </html>

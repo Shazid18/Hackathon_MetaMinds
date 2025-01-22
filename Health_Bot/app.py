@@ -16,7 +16,7 @@ llm = LLM(
     api_key=""
 )
 
-os.environ["SERPER_API_KEY"] = "ebf2218969d785f46bed48d0b2bc0cd4232b8642"
+os.environ["SERPER_API_KEY"] = ""
 
 search_tool = SerperDevTool()
 
