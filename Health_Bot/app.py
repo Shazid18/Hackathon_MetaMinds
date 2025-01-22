@@ -143,19 +143,17 @@ def process_initial_tasks(location):
     return results
 
 # Function to process insurance task
-def process_insurance_task(location, has_insurance, previous_results):
+def process_insurance_task(location, previous_results):
     insurance_task = create_task(
-        f"""Based on the completed analysis for {location} and user's insurance status ({has_insurance}):
-        1. If user has no insurance:
-           - Research and recommend suitable travel health insurance options
-           - List coverage benefits and costs
-           - Provide application process details
-        2. If user has existing insurance:
-           - Analyze coverage gaps for {location}
-           - Recommend supplementary insurance if needed
-           - Provide tips for using existing insurance abroad""",
+        f"""Based on the completed analysis for {location}:
+        Provide detailed insurance information including the following:
+        - Key benefits of travel insurance for {location}.
+        - A list of insurance providers offering travel insurance in {location}.
+        - Coverage details, contact information, and websites for each provider.
+        
+        Provide the details in a structured and clear format.""",
         insurance_advisor,
-        "Detailed insurance recommendations and guidance",
+        "Insurance information with providers, coverage, and benefits",
         []
     )
     
@@ -166,7 +164,6 @@ def process_insurance_task(location, has_insurance, previous_results):
     
     insurance_result = insurance_crew.kickoff(inputs={
         "location": location,
-        "has_insurance": has_insurance,
         "previous_results": previous_results
     })
     
@@ -241,13 +238,12 @@ def index():
 @app.route('/get_travel_advisory', methods=['POST'])
 def get_travel_advisory():
     location = request.form['location']
-    has_insurance = request.form['has_insurance']
     
     # Process initial tasks
     initial_results = process_initial_tasks(location)
     
     # Process insurance task
-    insurance_results = process_insurance_task(location, has_insurance, initial_results)
+    insurance_results = process_insurance_task(location, initial_results)
     
     # Generate final report
     final_report = compile_final_report(location, initial_results, insurance_results)
