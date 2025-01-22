@@ -3,68 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Assistant</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-        }
-        .container {
-            width: 80%;
-            margin: 0 auto;
-        }
-        .results {
-            background-color: #f0f0f0;
-            padding: 20px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label, input {
-            font-size: 1.2em;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 1.2em;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+    <title>Travel Advisory</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Travel Assistant</h1>
-        <form method="POST">
-            <div class="form-group">
-                <label for="location">Enter your travel location:</label>
-                <input type="text" id="location" name="location" required>
-            </div>
-            <div class="form-group">
-                <label for="has_insurance">Do you have travel insurance?</label>
-                <input type="text" id="has_insurance" name="has_insurance" placeholder="yes/no" required>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
+    <h1>Welcome to the Travel Advisory System</h1>
 
-        {% if results %}
-        <div class="results">
-            <h3>Analysis for {{ location }}:</h3>
-            <pre>{{ results }}</pre>
-        </div>
-        {% endif %}
-    </div>
+    <form method="POST" action="/get_travel_advisory">
+        <label for="location">Enter your destination:</label>
+        <input type="text" id="location" name="location" required>
+        <br><br>
+
+        <label for="has_insurance">Do you already have health insurance? (yes/no):</label>
+        <input type="text" id="has_insurance" name="has_insurance" required>
+        <br><br>
+
+        <input type="submit" value="Get Travel Advisory">
+    </form>
+
+    {% if final_report %}
+        <h2>Travel Advisory Report for {{ location }}</h2>
+        <h3>Report has been saved to: {{ saved_file }}</h3>
+        <h4>Preview of the Report:</h4>
+        <pre>{{ final_report }}</pre>
+    {% endif %}
 </body>
 </html>
