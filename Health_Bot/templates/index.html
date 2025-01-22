@@ -5,15 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travel Health Assistant</title>
     <style>
-        /* Loader style */
+        /* General styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            text-align: center;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            width: 100%;
+            margin: 0 20px;
+        }
+
+        /* Header */
+        h1 {
+            font-size: 2.5em;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        /* Form styles */
+        label {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            display: block;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            font-size: 1.2em;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        /* Loader styles */
         #loader {
             display: none;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border: 16px solid #f3f3f3; /* Light grey */
-            border-top: 16px solid #3498db; /* Blue */
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #3498db;
             border-radius: 50%;
             width: 120px;
             height: 120px;
@@ -26,10 +96,42 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Page content */
-        .container {
-            text-align: center;
+        /* Final report section */
+        h2 {
+            font-size: 2em;
+            color: #2980b9;
             margin-top: 30px;
+        }
+
+        pre {
+            background-color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            input[type="text"] {
+                width: 90%;
+            }
+
+            input[type="submit"] {
+                width: 100%;
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -41,7 +143,7 @@
         <form id="advisory-form" method="POST" action="/get_travel_advisory">
             <label for="location">Enter your destination:</label>
             <input type="text" id="location" name="location" required>
-            <br><br>
+            <br>
 
             <label for="has_insurance">Do you already have health insurance? (yes/no):</label>
             <input type="text" id="has_insurance" name="has_insurance" required>
@@ -56,7 +158,6 @@
         <!-- Results Section -->
         {% if final_report %}
             <h2>Travel Health Assistant Report for {{ location }}</h2>
-            <!-- <h4>Travel Health Assistant Report:</h4> -->
             <pre>{{ final_report }}</pre>
         {% endif %}
     </div>
