@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from crewai import LLM, Agent, Task, Crew
 from crewai_tools import SerperDevTool
 import warnings
@@ -20,7 +20,7 @@ os.environ["SERPER_API_KEY"] = ""
 
 search_tool = SerperDevTool()
 
-# Define agents (same as your previous code)
+# Define agents
 weather_agent = Agent(
     role='Weather Analyst',
     goal='Accurately predict and analyze weather conditions for the specified location',
@@ -84,6 +84,14 @@ supervisor_agent = Agent(
     llm=llm
 )
 
+def serialize_crew_output(crew_output):
+    """
+    Convert CrewOutput object to a JSON-serializable format
+    """
+    if hasattr(crew_output, 'raw_output'):
+        return str(crew_output.raw_output)
+    return str(crew_output)
+
 # Function to create tasks
 def create_task(description, agent, expected_output, context=None):
     return Task(
@@ -140,18 +148,15 @@ def process_initial_tasks(location):
     )
     
     results = crew.kickoff(inputs={"location": location})
-    return results
+    return serialize_crew_output(results)
 
 # Function to process insurance task
 def process_insurance_task(location, previous_results):
     insurance_task = create_task(
-        f"""Based on the completed analysis for {location}:
-        Provide detailed insurance information including the following:
-        - Key benefits of travel insurance for {location}.
-        - A list of insurance providers offering travel insurance in {location}.
-        - Coverage details, contact information, and websites for each provider.
-        
-        Provide the details in a structured and clear format.""",
+        f"""Based on the completed analysis for {location}, provide detailed insurance information including:
+        - Key benefits of travel insurance for {location}
+        - List of insurance providers offering travel insurance in {location}
+        - Coverage details, contact information, and websites for each provider""",
         insurance_advisor,
         "Insurance information with providers, coverage, and benefits",
         []
@@ -167,9 +172,9 @@ def process_insurance_task(location, previous_results):
         "previous_results": previous_results
     })
     
-    return insurance_result
+    return serialize_crew_output(insurance_result)
 
-# Function to compile the final report
+# Function to compile final report
 def compile_final_report(location, initial_results, insurance_results):
     supervisor_task = create_task(
         f"""Create a comprehensive travel advisory report for {location} by combining and organizing:
@@ -184,18 +189,9 @@ def compile_final_report(location, initial_results, insurance_results):
         - Emergency Services
         - Insurance Recommendations
         
-        Format the output as a proper Markdown document with headers, subheaders, and appropriate formatting.
-        Use proper Markdown syntax for:
-        - Headers (# for main headers, ## for subheaders)
-        - Bullet points (- for lists)
-        - Emphasis (* for italic, ** for bold)
-        - Tables (if needed)
-        
-        Highlight key warnings and recommendations in each section using bullet points.
-        For each section, provide key points in the form of bullet points, not paragraphs.
-        """,
+        Format the output as a proper Markdown document with headers, subheaders, and appropriate formatting.""",
         supervisor_agent,
-        "Complete travel advisory report with all sections organized in Markdown format using bullet points",
+        "Complete travel advisory report with all sections organized in Markdown format",
         []
     )
     
@@ -210,48 +206,52 @@ def compile_final_report(location, initial_results, insurance_results):
         "insurance_results": insurance_results
     })
     
-    return final_report
+    return serialize_crew_output(final_report)
 
-# Function to save the report to a file
+# Function to save report to file
 def save_report_to_file(location, report_content):
-    # Create a reports directory if it doesn't exist
     if not os.path.exists('reports'):
         os.makedirs('reports')
     
-    # Format filename with location and current timestamp
     from datetime import datetime
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"reports/travel_advisory_{location.lower().replace(' ', '_')}_{timestamp}.md"
     
-    # Save the report
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(str(report_content))
     
     return filename
 
-# Flask route for index page
+# Flask routes
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Flask route to handle form submission and return results
 @app.route('/get_travel_advisory', methods=['POST'])
 def get_travel_advisory():
-    location = request.form['location']
+    try:
+        location = request.form['location']
+        
+        # Process tasks
+        initial_results = process_initial_tasks(location)
+        insurance_results = process_insurance_task(location, initial_results)
+        final_report = compile_final_report(location, initial_results, insurance_results)
+        
+        # Save report
+        saved_file = save_report_to_file(location, final_report)
+        
+        # Return JSON response
+        return jsonify({
+            'status': 'success',
+            'final_report': final_report,
+            'saved_file': saved_file
+        })
     
-    # Process initial tasks
-    initial_results = process_initial_tasks(location)
-    
-    # Process insurance task
-    insurance_results = process_insurance_task(location, initial_results)
-    
-    # Generate final report
-    final_report = compile_final_report(location, initial_results, insurance_results)
-    
-    # Save the report to a file
-    saved_file = save_report_to_file(location, final_report)
-    
-    return render_template('index.html', location=location, final_report=final_report, saved_file=saved_file)
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e)
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
